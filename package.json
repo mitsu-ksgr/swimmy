@@ -1,0 +1,21 @@
+{
+    "name": "swimmy",
+    "productName": "Swimmy",
+    "version": "0.1.0",
+    "description": "Swimmy is simple GUI tool for manage status of docker-compose",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/"
+    },
+    "author": "mitsu-ksgr <mitsu.naka.dev@gmail.com>",
+    "homepage": "",
+    "main": "./src/main.js",
+    "dependencies": {
+        "electron": "^1.4.10",
+        "jquery": "^3.1.1"
+    },
+    "devDependencies": {
+        "electron-packager": "^8.3.0"
+    }
+}

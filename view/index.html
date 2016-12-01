@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Swimmy</title>
+  <link rel="stylesheet" href="swimmy.css"/>
+  <link rel="stylesheet" href="../lib/bootstrap-3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../lib/bootstrap-3.3.7/css/bootstrap-theme.min.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <h1>Swimmy<img src="../images/icon/swimmy.png" class="app-icon" alt="" width="50px"></h1>
+    <div class="panel panel-info">
+      <div class="panel-heading">Docker Project</div>
+      <div class="panel-body">
+        <dl class="dl-horizontal">
+          <dt>Docker Project Path</dt><dd id="dcmp_dir_path">none</dd>
+          <dt>docker-compose</dt><dd id="dcmp_yml_file">none</dd>
+        </dl>
+        <p class="text-right">
+          <input id="dcmposer_selector" type="button" class="btn btn-info" value="Select docker-compose.yml">
+          <input id="dcmposer_resetter" type="button" class="btn btn-info" value="Reset">
+        </p>
+      </div>
+    </div>
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">Control</div>
+      <div class="panel-body">
+        <p id="dcmp_control_buttons">
+          <button id="dcmp_up" class="btn btn-info">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+          </button>
+          <button id="dcmp_pause" class="btn btn-info">
+            <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+          </button>
+          <button id="dcmp_stop" class="btn btn-info">
+            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+          </button>
+          <button id="dcmp_restart" class="btn btn-warning">
+            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+          </button>
+          <button id="dcmp_down" class="btn btn-danger">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+          </button>
+        </p>
+
+        <div id="runtime_info_panel">
+          <ul id="runtime_info_tabs" class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#status" id="status-tab" role="tab" data-toggle="tab" aria-controls="status" aria-expanded="true">
+                Status
+              </a>
+            </li>
+            <li role="presentation">
+              <a href="#logs" id="logs-tab" role="tab" data-toggle="tab" aria-controls="logs" aria-expanded="true">
+                Logs
+              </a>
+            </li>
+          </ul>
+
+          <div id="runtime_info_contents" class="tab-content">
+            <div id="status" aria-labelledby="status-tab" class="tab-pane fade in active scroll" role="tabpanel">
+              <p>
+                status display area
+              </p>
+            </div>
+            <div id="logs" aria-labelledby="logs-tab" class="tab-pane fade scroll" role="tabpanel">
+              <p>
+                log message area
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>window.jQuery = window.$ = require('jquery');</script>
+  <script src="../lib/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+  <script src="./../src/swimmy.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,31 @@
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  font-family: @font-regular;
+  cursor: default;
+  -webkit-font-smoothing: subpixel-antialiased;
+  text-rendering: optimizelegibility;
+  //-webkit-font-smoothing: antialiased;
+  img {
+    pointer-events: none;
+  }
+}
+
+.app-icon {
+  transform: rotate(-20deg);
+}
+
+.dl-horizontal dt {
+  white-space: normal;
+  width: 200px;
+}
+
+.scroll {
+  overflow: scroll;
+  height: 300px;
+}

@@ -6,10 +6,10 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/"
+        "url": "https://github.com/mitsu-ksgr/swimmy.git"
     },
     "author": "mitsu-ksgr <mitsu.naka.dev@gmail.com>",
-    "homepage": "",
+    "homepage": "https://github.com/mitsu-ksgr/swimmy/blob/develop/README.md",
     "main": "./src/main.js",
     "dependencies": {
         "electron": "^1.4.10",
@@ -17,5 +17,10 @@
     },
     "devDependencies": {
         "electron-packager": "^8.3.0"
+    },
+    "scripts": {
+        "release-linux"  : "electron-packager . Swimmy --out=./out --overwrite --asar --version=1.4.8 --platform=linux  --arch=x64",
+        "release-darwin" : "electron-packager . Swimmy --out=./out --overwrite --asar --version=1.4.8 --platform=darwin --arch=x64 --icon=./images/icon/swimmy.icns",
+        "release-win32"  : "electron-packager . Swimmy --out=./out --overwrite --asar --version=1.4.8 --platform=win32  --arch=x64 --icon=./images/icon/swimmy.ico "
     }
 }

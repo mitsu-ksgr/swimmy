@@ -92,6 +92,40 @@ exports.up = function(docker_compose_file_path, callback) {
 };
 
 /**
+ * Executes `docker-compose pause`.
+ *
+ * @param {string}      docker_compose_file_path    Path to docker-compose.yml
+ * @param {function}    callback                    Called when process terminates.
+ */
+exports.pause = function(docker_compose_file_path, callback) {
+    const work_dir = path.dirname(docker_compose_file_path);
+    exec(dcmp('pause'), {cwd: work_dir}, (error, stdout, stderr) => {
+        if (error) {
+            dialog.showErrorBox('Error: failed to `docker-compose pause`', error);
+            return;
+        }
+        if (callback) callback();
+    });
+};
+
+/**
+ * Executes `docker-compose unpause`.
+ *
+ * @param {string}      docker_compose_file_path    Path to docker-compose.yml
+ * @param {function}    callback                    Called when process terminates.
+ */
+exports.unpause = function(docker_compose_file_path, callback) {
+    const work_dir = path.dirname(docker_compose_file_path);
+    exec(dcmp('unpause'), {cwd: work_dir}, (error, stdout, stderr) => {
+        if (error) {
+            dialog.showErrorBox('Error: failed to `docker-compose unpause`', error);
+            return;
+        }
+        if (callback) callback();
+    });
+};
+
+/**
  * Executes `docker-compose stop`.
  *
  * @param {string}      docker_compose_file_path    Path to docker-compose.yml
@@ -102,6 +136,40 @@ exports.stop = function(docker_compose_file_path, callback) {
     exec(dcmp('stop'), {cwd: work_dir}, (error, stdout, stderr) => {
         if (error) {
             dialog.showErrorBox('Error: failed to `docker-compose stop`', error);
+            return;
+        }
+        if (callback) callback();
+    });
+};
+
+/**
+ * Executes `docker-compose restart`.
+ *
+ * @param {string}      docker_compose_file_path    Path to docker-compose.yml
+ * @param {function}    callback                    Called when process terminates.
+ */
+exports.restart = function(docker_compose_file_path, callback) {
+    const work_dir = path.dirname(docker_compose_file_path);
+    exec(dcmp('restart'), {cwd: work_dir}, (error, stdout, stderr) => {
+        if (error) {
+            dialog.showErrorBox('Error: failed to `docker-compose restart`', error);
+            return;
+        }
+        if (callback) callback();
+    });
+};
+
+/**
+ * Executes `docker-compose down`.
+ *
+ * @param {string}      docker_compose_file_path    Path to docker-compose.yml
+ * @param {function}    callback                    Called when process terminates.
+ */
+exports.down = function(docker_compose_file_path, callback) {
+    const work_dir = path.dirname(docker_compose_file_path);
+    exec(dcmp('down'), {cwd: work_dir}, (error, stdout, stderr) => {
+        if (error) {
+            dialog.showErrorBox('Error: failed to `docker-compose down`', error);
             return;
         }
         if (callback) callback();

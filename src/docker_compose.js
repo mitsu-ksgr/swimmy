@@ -20,6 +20,14 @@ function dcmp(cmd) {
     return CMD_DCOMP + ' ' + cmd;
 }
 
+const State = {
+    None    : 'None',       //! Warning: actually, this state is not exists in docker-compose ps.
+    Exit    : 'Exit',
+    Running : 'Up',
+    Paused  : 'Paused',
+};
+exports.State = State;
+
 
 /**
  * Parse docker-composer's stdout.
@@ -51,6 +59,9 @@ function parseStdout(cmd, stdout) {
 }
 
 
+//------------------------------------------------------------------------------
+//  docker-compose command wrapper functions
+//------------------------------------------------------------------------------
 /**
  * Executes `docker-compose ps`.
  *
@@ -58,7 +69,7 @@ function parseStdout(cmd, stdout) {
  * @param {function}    callback                    Called with the parsed output when process terminates.
  *                                                  Parsed output of `docker-compose ps` is passed to argument.
  */
-exports.ps = function(docker_compose_file_path, callback) {
+function dcmp_ps(docker_compose_file_path, callback) {
     const work_dir = path.dirname(docker_compose_file_path);
     exec(dcmp('ps'), {cwd: work_dir}, (error, stdout, stderr) => {
         if (error) {
@@ -69,6 +80,7 @@ exports.ps = function(docker_compose_file_path, callback) {
         if (callback) callback(out);
     });
 };
+exports.ps = dcmp_ps;
 
 /**
  * Executes `docker-compose up -d`.
@@ -76,7 +88,7 @@ exports.ps = function(docker_compose_file_path, callback) {
  * @param {string}      docker_compose_file_path    Path to docker-compose.yml
  * @param {function}    callback                    Called when process terminates.
  */
-exports.up = function(docker_compose_file_path, callback) {
+function dcmp_up(docker_compose_file_path, callback) {
     const work_dir = path.dirname(docker_compose_file_path);
     exec(dcmp('up -d'), {cwd: work_dir}, (error, stdout, stderr) => {
         if (error) {
@@ -90,6 +102,7 @@ exports.up = function(docker_compose_file_path, callback) {
         if (callback) callback();
     });
 };
+exports.up = dcmp_up;
 
 /**
  * Executes `docker-compose pause`.
@@ -97,7 +110,7 @@ exports.up = function(docker_compose_file_path, callback) {
  * @param {string}      docker_compose_file_path    Path to docker-compose.yml
  * @param {function}    callback                    Called when process terminates.
  */
-exports.pause = function(docker_compose_file_path, callback) {
+function dcmp_pause(docker_compose_file_path, callback) {
     const work_dir = path.dirname(docker_compose_file_path);
     exec(dcmp('pause'), {cwd: work_dir}, (error, stdout, stderr) => {
         if (error) {
@@ -107,6 +120,7 @@ exports.pause = function(docker_compose_file_path, callback) {
         if (callback) callback();
     });
 };
+exports.pause = dcmp_pause;
 
 /**
  * Executes `docker-compose unpause`.
@@ -114,7 +128,7 @@ exports.pause = function(docker_compose_file_path, callback) {
  * @param {string}      docker_compose_file_path    Path to docker-compose.yml
  * @param {function}    callback                    Called when process terminates.
  */
-exports.unpause = function(docker_compose_file_path, callback) {
+function dcmp_unpause(docker_compose_file_path, callback) {
     const work_dir = path.dirname(docker_compose_file_path);
     exec(dcmp('unpause'), {cwd: work_dir}, (error, stdout, stderr) => {
         if (error) {
@@ -124,6 +138,7 @@ exports.unpause = function(docker_compose_file_path, callback) {
         if (callback) callback();
     });
 };
+exports.unpause = dcmp_unpause;
 
 /**
  * Executes `docker-compose stop`.
@@ -131,7 +146,7 @@ exports.unpause = function(docker_compose_file_path, callback) {
  * @param {string}      docker_compose_file_path    Path to docker-compose.yml
  * @param {function}    callback                    Called when process terminates.
  */
-exports.stop = function(docker_compose_file_path, callback) {
+function dcmp_stop(docker_compose_file_path, callback) {
     const work_dir = path.dirname(docker_compose_file_path);
     exec(dcmp('stop'), {cwd: work_dir}, (error, stdout, stderr) => {
         if (error) {
@@ -141,6 +156,7 @@ exports.stop = function(docker_compose_file_path, callback) {
         if (callback) callback();
     });
 };
+exports.stop = dcmp_stop;
 
 /**
  * Executes `docker-compose restart`.
@@ -148,7 +164,7 @@ exports.stop = function(docker_compose_file_path, callback) {
  * @param {string}      docker_compose_file_path    Path to docker-compose.yml
  * @param {function}    callback                    Called when process terminates.
  */
-exports.restart = function(docker_compose_file_path, callback) {
+function dcmp_restart(docker_compose_file_path, callback) {
     const work_dir = path.dirname(docker_compose_file_path);
     exec(dcmp('restart'), {cwd: work_dir}, (error, stdout, stderr) => {
         if (error) {
@@ -158,6 +174,7 @@ exports.restart = function(docker_compose_file_path, callback) {
         if (callback) callback();
     });
 };
+exports.restart = dcmp_restart;
 
 /**
  * Executes `docker-compose down`.
@@ -165,7 +182,7 @@ exports.restart = function(docker_compose_file_path, callback) {
  * @param {string}      docker_compose_file_path    Path to docker-compose.yml
  * @param {function}    callback                    Called when process terminates.
  */
-exports.down = function(docker_compose_file_path, callback) {
+function dcmp_down(docker_compose_file_path, callback) {
     const work_dir = path.dirname(docker_compose_file_path);
     exec(dcmp('down'), {cwd: work_dir}, (error, stdout, stderr) => {
         if (error) {
@@ -175,6 +192,7 @@ exports.down = function(docker_compose_file_path, callback) {
         if (callback) callback();
     });
 };
+exports.down = dcmp_down;
 
 /**
  * Executes `docker-compose logs`.
@@ -182,7 +200,7 @@ exports.down = function(docker_compose_file_path, callback) {
  * @param {string}      docker_compose_file_path    Path to docker-compose.yml
  * @param {function}    callback                    Called when process terminates.
  */
-exports.logs = function(docker_compose_file_path, callback) {
+function dcmp_logs(docker_compose_file_path, callback) {
     const work_dir = path.dirname(docker_compose_file_path);
     exec(dcmp('logs'), {cwd: work_dir}, (error, stdout, stderr) => {
         if (error) {
@@ -192,5 +210,45 @@ exports.logs = function(docker_compose_file_path, callback) {
         if (callback) callback(stdout);
     });
 };
+exports.logs = dcmp_logs;
 
 
+//------------------------------------------------------------------------------
+//  docker-compose functions
+//------------------------------------------------------------------------------
+/**
+ * Fetch status of containers.
+ *
+ * @param {string}      docker_compose_file_path    Path to docker-compose.yml
+ * @param {function}    callback                    Called with the parsed output when process terminates.
+ *                                                  Parsed output of `docker-compose ps` is passed to argument.
+ */
+function fetchContainersStatus(docker_compose_file_path, callback) {
+    dcmp_ps(docker_compose_file_path, function(result) {
+        let ret = [];
+        for (let i = result.length - 1; --i >= 0; ret.push({}));    // result.length - 1: remove header column.
+        for (let key_idx = 0; key_idx < result[0].length; ++key_idx) {
+            let key = result[0][key_idx];
+            for (let i = 1; i < result.length; ++i) {
+                ret[i - 1][key] = result[i][key_idx];
+            }
+        }
+        if (callback) callback(ret);
+    });
+};
+exports.fetchContainersStatus = fetchContainersStatus;
+
+/**
+ * get container's state.
+ *
+ * @param {array}   status      container's status list.
+ */
+function getState(status) {
+    if (status.length <= 0) return State.None;
+    for (let i = 0; i < status.length; ++i) {
+        if (status[i].State == State.Running)   return State.Running;
+        if (status[i].State == State.Paused)    return State.Paused;
+    }
+    return State.Exit;
+};
+exports.getState = getState;

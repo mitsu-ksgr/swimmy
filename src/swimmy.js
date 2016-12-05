@@ -23,6 +23,7 @@ $(() => {
     let btn_dcmp_restart    = $('#dcmp_restart');
     let btn_dcmp_down       = $('#dcmp_down');
 
+    let elem_dcmp_state     = $('#dcmp_state');
     let elem_status         = $('#runtime_info_contents #status');
     let elem_logs           = $('#runtime_info_contents #logs');
 
@@ -54,29 +55,31 @@ $(() => {
         return {path: proj_path, yml: dcmp_yml};
     };
 
+    let build_status_table_html = (status) => {
+        let html = '<table class="table">';
+        html += '<thead><tr><th>#</th>' +
+            '<th>Name</th><th>Command</th><th>State</th><th>Ports</th>';
+        html += '</tr></thead><tbody>';
+        for (let i = 0; i < status.length; ++i) {
+            html += `<tr><th>${i}</th>` +
+                        `<td>${status[i].Name}</td>` +
+                        `<td>${status[i].Command}</td>` +
+                        `<td>${status[i].State}</td>` +
+                        `<td>${status[i].Ports}</td>` +
+                        '</tr>';
+        }
+        html += '</tbody></table>'
+        return html;
+    };
+
     let exec_dcmp_ps = () => {
         if (selected_dcmp_file_path == null) {
             console.log('exec_dcmp_ps: you need to select a docker-compose.yml first.');
             return;
         }
-        dcmp.ps(selected_dcmp_file_path, (result) => {
-            // Build html
-            let out_html = '<table class="table">';
-            out_html += '<thead><tr><th>#</th>';
-            for (let i = 0; i < result[0].length; ++i) {
-                out_html += '<th>' + result[0][i] + '</th>';
-            }
-            out_html += '</tr></thead>';
-            out_html += '<tbody>';
-            for (let i = 1; i < result.length; ++i) {
-                out_html += '<tr><th>' + i + '</th>';
-                for (let k = 0; k < result[i].length; ++k) {
-                    out_html += '<td>' + result[i][k] + '</td>';
-                }
-                out_html += '</tr>';
-            }
-            out_html += '</tbody></table>';
-            elem_status.html(out_html);
+        dcmp.fetchContainersStatus(selected_dcmp_file_path, (status) => {
+            elem_dcmp_state.html(dcmp.getState(status));
+            elem_status.html(build_status_table_html(status));
         });
     };
 
@@ -160,16 +163,15 @@ $(() => {
             filters: [{name: 'docker-compose.yml', extensions: ['yml']}]
         }, (file_paths) => {
             if (file_paths && file_paths.length > 0) {
-                let file_path = file_paths[0];
-                selected_dcmp_file_path = file_path;
-                elem_dcmp_dir_path.html(path.dirname(file_path));
-                elem_dcmp_yml_file.html(path.basename(file_path));
-
-                // TODO:check the status using dcmp ps
+                selected_dcmp_file_path = file_paths[0];
+                elem_dcmp_dir_path.html(path.dirname(selected_dcmp_file_path));
+                elem_dcmp_yml_file.html(path.basename(selected_dcmp_file_path));
                 set_dcmp_btns_enable(['up','down'], true);
+                exec_dcmp_ps();
             }
         });
     });
+
     // docker-compose.yml canceler.
     $('#dcmposer_resetter').click(() => {
         elem_dcmp_dir_path.html('none');

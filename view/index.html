@@ -27,26 +27,31 @@
     <div class="panel panel-primary">
       <div class="panel-heading">Control</div>
       <div class="panel-body">
-        <p id="dcmp_control_buttons">
-          <button id="dcmp_up" class="btn btn-info">
-            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-          </button>
-          <button id="dcmp_pause" class="btn btn-info">
-            <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
-          </button>
-          <button id="dcmp_unpause" class="btn btn-info">
-            <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
-          </button>
-          <button id="dcmp_stop" class="btn btn-info">
-            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
-          </button>
-          <button id="dcmp_restart" class="btn btn-warning">
-            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-          </button>
-          <button id="dcmp_down" class="btn btn-danger">
-            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-          </button>
-        </p>
+        <div>
+          <div id="dcmp_state">
+            Running
+          </div>
+          <div id="dcmp_control_buttons">
+            <button id="dcmp_up" class="btn btn-info">
+              <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+            </button>
+            <button id="dcmp_pause" class="btn btn-info">
+              <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+            </button>
+            <button id="dcmp_unpause" class="btn btn-info">
+              <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+            </button>
+            <button id="dcmp_stop" class="btn btn-info">
+              <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+            </button>
+            <button id="dcmp_restart" class="btn btn-warning">
+              <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+            </button>
+            <button id="dcmp_down" class="btn btn-danger">
+              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
 
         <div id="runtime_info_panel">
           <ul id="runtime_info_tabs" class="nav nav-tabs" role="tablist">

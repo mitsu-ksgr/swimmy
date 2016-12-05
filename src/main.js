@@ -21,7 +21,7 @@ function createWindow() {
     });
 
     win.loadURL(path.normalize('file://' + path.join(__dirname, '..', 'view', 'index.html')));
-    win.openDevTools();
+    // win.openDevTools();
     // if (process.env.NODE_ENV === 'development') {
     //     win.openDevTools();
     // }

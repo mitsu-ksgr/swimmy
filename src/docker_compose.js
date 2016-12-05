@@ -26,7 +26,6 @@ const State = {
     Running : 'Up',
     Paused  : 'Paused',
 };
-exports.State = State;
 
 
 /**
@@ -95,14 +94,28 @@ function dcmp_up(docker_compose_file_path, callback) {
             dialog.showErrorBox('Error: failed to `docker-compose up -d`', error);
             return;
         }
-        console.log("---------- [docker-compose up] ----------");
-        console.log("* stdout\n" + stdout);
-        console.log("* stderr\n" + stderr);
-        console.log("-----------------------------------------");
         if (callback) callback();
     });
 };
 exports.up = dcmp_up;
+
+/**
+ * Executes `docker-compose start`.
+ *
+ * @param {string}      docker_compose_file_path    Path to docker-compose.yml
+ * @param {function}    callback                    Called when process terminates.
+ */
+function dcmp_start(docker_compose_file_path, callback) {
+    const work_dir = path.dirname(docker_compose_file_path);
+    exec(dcmp('start'), {cwd: work_dir}, (error, stdout, stderr) => {
+        if (error) {
+            dialog.showErrorBox('Error: failed to `docker-compose start`', error);
+            return;
+        }
+        if (callback) callback();
+    });
+};
+exports.start = dcmp_start;
 
 /**
  * Executes `docker-compose pause`.

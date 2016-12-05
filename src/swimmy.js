@@ -10,22 +10,36 @@ const BrowserWindow = remote.BrowserWindow;
 const path = require('path');
 const dcmp = require('./../src/docker_compose');
 
-
 $(() => {
     let selected_dcmp_file_path = null;
     let elem_dcmp_dir_path = $('#dcmp_dir_path');
     let elem_dcmp_yml_file = $('#dcmp_yml_file');
 
     let btn_dcmp_up         = $('#dcmp_up');
+    let btn_dcmp_start      = $('#dcmp_start');
     let btn_dcmp_pause      = $('#dcmp_pause');
-    let btn_dcmp_unpause    = $('#dcmp_dcmp_unpause');
+    let btn_dcmp_unpause    = $('#dcmp_unpause');
     let btn_dcmp_stop       = $('#dcmp_stop');
     let btn_dcmp_restart    = $('#dcmp_restart');
     let btn_dcmp_down       = $('#dcmp_down');
 
     let elem_dcmp_state     = $('#dcmp_state');
+    let elem_loader         = $('#loading_indicator');
+    let elem_staus_content  = $('#runtime_info_contents');
     let elem_status         = $('#runtime_info_contents #status');
     let elem_logs           = $('#runtime_info_contents #logs');
+
+    let set_loading = (now_loading) => {
+        if (now_loading) {
+            elem_loader.removeClass('hidden');
+            elem_staus_content.addClass('hidden');
+        } else {
+            elem_loader.addClass('hidden');
+            elem_staus_content.removeClass('hidden');
+        }
+    };
+    let loading_start   = () => { set_loading(true);  };
+    let loading_finish  = () => { set_loading(false); };
 
     let set_dcmp_btns_enable = (targets, is_able = true) => {
         let all_flag = false;
@@ -44,7 +58,61 @@ $(() => {
             }
         });
     };
-    // set_dcmp_btns_enable('all', false); // init by all disabled.
+    let set_dcmp_btns_visible = (targets, is_visible = true) => {
+        let all_flag = false;
+        if (typeof targets == 'string' && targets.toLowerCase() == 'all') {
+            all_flag = true;
+        } else if (!Array.isArray(targets)) {
+            targets = [targets];
+        }
+        $('#dcmp_control_buttons .btn').each((index, elem) => {
+            let cmd = $(elem).attr('id').split('_').pop();
+            for (let i = 0; i < targets.length; ++i) {
+                if (all_flag || targets[i] == cmd) {
+                    if (is_visible) $(elem).show();
+                    else $(elem).hide();
+                }
+            }
+        });
+    };
+    set_dcmp_btns_visible('all', false); // init by all hide.
+
+    let setup_dcmp_btns = (state) => {
+        let config = {
+            'None': {
+                // UP, [D]STOP, [D]RESTART, [D]DOWN
+                'enabled': ['up'],
+                'disabled': ['stop', 'restart', 'down'],
+                'show': ['up', 'stop', 'restart', 'down'],
+                'hide': ['start', 'pause', 'unpause'],
+            },
+            'Exit': {
+                // START, [D]STOP, [D]RESTART, DOWN
+                'enabled': ['start', 'down'],
+                'disabled': ['stop', 'restart'],
+                'show': ['start', 'stop', 'restart', 'down'],
+                'hide': ['up', 'pause', 'unpause'],
+            },
+            'Up': {
+                // PAUSE, STOP, RESTART, DOWN
+                'enabled': ['pause', 'stop', 'restart', 'down'],
+                'disabled': [],
+                'show': ['pause', 'stop', 'restart', 'down'],
+                'hide': ['up', 'start', 'unpause'],
+            },
+            'Paused': {
+                // UNPAUSE, [D]STOP, [D]RESTART, [D]DOWN
+                'enabled': ['unpause'],
+                'disabled': ['stop', 'restart', 'down'],
+                'show': ['unpause', 'stop', 'restart', 'down'],
+                'hide': ['up', 'start', 'pause'],
+            }
+        };
+        set_dcmp_btns_enable(config[state].enabled, true);
+        set_dcmp_btns_enable(config[state].disabled, false);
+        set_dcmp_btns_visible(config[state].show, true);
+        set_dcmp_btns_visible(config[state].hide, false);
+    };
 
     let get_proj_info = () => {
         let proj_path = elem_dcmp_dir_path.html();
@@ -72,14 +140,17 @@ $(() => {
         return html;
     };
 
-    let exec_dcmp_ps = () => {
+    let exec_dcmp_ps = (callback) => {
         if (selected_dcmp_file_path == null) {
             console.log('exec_dcmp_ps: you need to select a docker-compose.yml first.');
             return;
         }
         dcmp.fetchContainersStatus(selected_dcmp_file_path, (status) => {
-            elem_dcmp_state.html(dcmp.getState(status));
+            let state = dcmp.getState(status);
+            setup_dcmp_btns(state);
+            elem_dcmp_state.html(state);
             elem_status.html(build_status_table_html(status));
+            if (callback) callback();
         });
     };
 
@@ -88,8 +159,9 @@ $(() => {
             console.log('exec_dcmp_logs: you need to select a docker-compose.yml first.');
             return;
         }
+        loading_start();
         dcmp.logs(selected_dcmp_file_path, (stdout) => {
-            exec_dcmp_ps();
+            exec_dcmp_ps(() => {loading_finish()});
             elem_logs.html(`<code>${stdout}</code>`);
         });
     };
@@ -99,8 +171,20 @@ $(() => {
             console.log('exec_dcmp_up: you need to select a docker-compose.yml first.');
             return;
         }
+        loading_start();
         dcmp.up(selected_dcmp_file_path, (result) => {
-            exec_dcmp_ps();
+            exec_dcmp_ps(() => {loading_finish()});
+        });
+    };
+
+    let exec_dcmp_start = () => {
+        if (selected_dcmp_file_path == null) {
+            console.log('exec_dcmp_up: you need to select a docker-compose.yml first.');
+            return;
+        }
+        loading_start();
+        dcmp.start(selected_dcmp_file_path, (result) => {
+            exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
@@ -109,8 +193,9 @@ $(() => {
             console.log('exec_dcmp_pause: you need to select a docker-compose.yml first.');
             return;
         }
+        loading_start();
         dcmp.pause(selected_dcmp_file_path, (result) => {
-            exec_dcmp_ps();
+            exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
@@ -119,8 +204,9 @@ $(() => {
             console.log('exec_dcmp_unpause: you need to select a docker-compose.yml first.');
             return;
         }
+        loading_start();
         dcmp.unpause(selected_dcmp_file_path, (result) => {
-            exec_dcmp_ps();
+            exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
@@ -129,8 +215,9 @@ $(() => {
             console.log('exec_dcmp_stop: you need to select a docker-compose.yml first.');
             return;
         }
+        loading_start();
         dcmp.stop(selected_dcmp_file_path, (result) => {
-            exec_dcmp_ps();
+            exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
@@ -139,8 +226,9 @@ $(() => {
             console.log('exec_dcmp_restart: you need to select a docker-compose.yml first.');
             return;
         }
+        loading_start();
         dcmp.restart(selected_dcmp_file_path, (result) => {
-            exec_dcmp_ps();
+            exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
@@ -149,8 +237,9 @@ $(() => {
             console.log('exec_dcmp_down: you need to select a docker-compose.yml first.');
             return;
         }
+        loading_start();
         dcmp.down(selected_dcmp_file_path, (result) => {
-            exec_dcmp_ps();
+            exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
@@ -166,8 +255,8 @@ $(() => {
                 selected_dcmp_file_path = file_paths[0];
                 elem_dcmp_dir_path.html(path.dirname(selected_dcmp_file_path));
                 elem_dcmp_yml_file.html(path.basename(selected_dcmp_file_path));
-                set_dcmp_btns_enable(['up','down'], true);
-                exec_dcmp_ps();
+                // set_dcmp_btns_enable(['up','down'], true);
+                exec_dcmp_ps(() => {loading_finish()});
             }
         });
     });
@@ -182,6 +271,10 @@ $(() => {
     btn_dcmp_up.click(() => {
         console.log('btn_dcmp_up clicked');
         exec_dcmp_up();
+    });
+    btn_dcmp_start.click(() => {
+        console.log('btn_dcmp_start clicked');
+        exec_dcmp_start();
     });
     btn_dcmp_pause.click(() => {
         console.log('exec_dcmp_pause clicked');

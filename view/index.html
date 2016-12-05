@@ -28,11 +28,15 @@
       <div class="panel-heading">Control</div>
       <div class="panel-body">
         <div>
-          <div id="dcmp_state">
-            Running
+          <div>
+            <span>State: </span>
+            <span id="dcmp_state">None</span>
           </div>
           <div id="dcmp_control_buttons">
             <button id="dcmp_up" class="btn btn-info">
+              <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+            </button>
+            <button id="dcmp_start" class="btn btn-info">
               <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
             </button>
             <button id="dcmp_pause" class="btn btn-info">
@@ -67,7 +71,7 @@
             </li>
           </ul>
 
-          <div id="runtime_info_contents" class="tab-content">
+          <div id="runtime_info_contents" class="tab-content hidden">
             <div id="status" aria-labelledby="status-tab" class="tab-pane fade in active scroll" role="tabpanel">
               <p>
                 status display area
@@ -79,6 +83,7 @@
               </p>
             </div>
           </div>
+          <div id="loading_indicator" class="loading_indicator hidden"></div>
         </div>
       </div>
     </div>

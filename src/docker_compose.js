@@ -1,6 +1,7 @@
 'use strict';
 
 // Module dependencies
+const {remote} = require('electron');
 const dialog = remote.dialog;
 const path = require('path');
 const exec = require('child_process').exec;

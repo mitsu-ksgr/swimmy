@@ -1,24 +1,22 @@
 'use strict';
 
+// Module dependencies
 const dialog = remote.dialog;
 const path = require('path');
 const exec = require('child_process').exec;
-//const execSync = require('child_process').execSync;
 
-// docker-compose command
-const CMD_DOCKER_COMPOSE_DARWIN = '/usr/local/bin/docker-compose';
-const CMD_DOCKER_COMPOSE_WIN32  = 'docker-compose';
-const CMD_DCOMP = ((platform) => {
-    let ret = CMD_DOCKER_COMPOSE_DARWIN;
+const DOCKER_COMPOSE_COMMAND_PATH = ((platform) => {
+    const DOCKER_COMPOSE_PATH_LINUX     = '/usr/bin/docker-compose';
+    const DOCKER_COMPOSE_PATH_DARWIN    = '/usr/local/bin/docker-compose';
+    const DOCKER_COMPOSE_PATH_WIN32     = 'docker-compose';
+
     if (platform === 'win32') {
-        ret = CMD_DOCKER_COMPOSE_WIN32;
+        return DOCKER_COMPOSE_PATH_WIN32;
+    } else if (platform === 'darwin') {
+        return DOCKER_COMPOSE_PATH_DARWIN;
     }
-    return ret;
+    return DOCKER_COMPOSE_PATH_LINUX;
 })(process.platform);
-
-function dcmp(cmd) {
-    return CMD_DCOMP + ' ' + cmd;
-}
 
 const State = {
     None    : 'None',       //! Warning: actually, this state is not exists in docker-compose ps.
@@ -28,12 +26,24 @@ const State = {
 };
 
 
-/**
- * Parse docker-composer's stdout.
- *
- * @param {string}  cmd     command name.
- * @param {string}  stdout  stdout.
- */
+//------------------------------------------------------------------------------
+//  Helper Functions
+//------------------------------------------------------------------------------
+function dcmp(cmd) {
+    return DOCKER_COMPOSE_COMMAND_PATH + ' ' + cmd;
+}
+
+function runDcmpCommand(cmd, dcmp_file_path, callback) {
+    const work_dir = path.dirname(dcmp_file_path);
+    exec(dcmp(cmd), {cwd: work_dir}, (error, stdout, stderr) => {
+        if (error) {
+            dialog.showErrorBox(`Error: failed to "docker-compose ${cmd}"`, error);
+            return;
+        }
+        if (callback) callback(stdout, stderr);
+    });
+}
+
 function parseStdout(cmd, stdout) {
     const parser = {
         // docker-compose ps
@@ -59,176 +69,13 @@ function parseStdout(cmd, stdout) {
 
 
 //------------------------------------------------------------------------------
-//  docker-compose command wrapper functions
+//  DockerCompose Class
 //------------------------------------------------------------------------------
-/**
- * Executes `docker-compose ps`.
- *
- * @param {string}      docker_compose_file_path    Path to docker-compose.yml
- * @param {function}    callback                    Called with the parsed output when process terminates.
- *                                                  Parsed output of `docker-compose ps` is passed to argument.
- */
-function dcmp_ps(docker_compose_file_path, callback) {
-    const work_dir = path.dirname(docker_compose_file_path);
-    exec(dcmp('ps'), {cwd: work_dir}, (error, stdout, stderr) => {
-        if (error) {
-            dialog.showErrorBox('Error: failed to `docker-compose ps`', error);
-            return;
-        }
-        let out = parseStdout('ps', stdout);
-        if (callback) callback(out);
-    });
-};
-exports.ps = dcmp_ps;
+function DockerCompose(docker_compose_file_path) {
+    this.dcmp_file_path = docker_compose_file_path;
+}
+module.exports = DockerCompose;
 
-/**
- * Executes `docker-compose up -d`.
- *
- * @param {string}      docker_compose_file_path    Path to docker-compose.yml
- * @param {function}    callback                    Called when process terminates.
- */
-function dcmp_up(docker_compose_file_path, callback) {
-    const work_dir = path.dirname(docker_compose_file_path);
-    exec(dcmp('up -d'), {cwd: work_dir}, (error, stdout, stderr) => {
-        if (error) {
-            dialog.showErrorBox('Error: failed to `docker-compose up -d`', error);
-            return;
-        }
-        if (callback) callback();
-    });
-};
-exports.up = dcmp_up;
-
-/**
- * Executes `docker-compose start`.
- *
- * @param {string}      docker_compose_file_path    Path to docker-compose.yml
- * @param {function}    callback                    Called when process terminates.
- */
-function dcmp_start(docker_compose_file_path, callback) {
-    const work_dir = path.dirname(docker_compose_file_path);
-    exec(dcmp('start'), {cwd: work_dir}, (error, stdout, stderr) => {
-        if (error) {
-            dialog.showErrorBox('Error: failed to `docker-compose start`', error);
-            return;
-        }
-        if (callback) callback();
-    });
-};
-exports.start = dcmp_start;
-
-/**
- * Executes `docker-compose pause`.
- *
- * @param {string}      docker_compose_file_path    Path to docker-compose.yml
- * @param {function}    callback                    Called when process terminates.
- */
-function dcmp_pause(docker_compose_file_path, callback) {
-    const work_dir = path.dirname(docker_compose_file_path);
-    exec(dcmp('pause'), {cwd: work_dir}, (error, stdout, stderr) => {
-        if (error) {
-            dialog.showErrorBox('Error: failed to `docker-compose pause`', error);
-            return;
-        }
-        if (callback) callback();
-    });
-};
-exports.pause = dcmp_pause;
-
-/**
- * Executes `docker-compose unpause`.
- *
- * @param {string}      docker_compose_file_path    Path to docker-compose.yml
- * @param {function}    callback                    Called when process terminates.
- */
-function dcmp_unpause(docker_compose_file_path, callback) {
-    const work_dir = path.dirname(docker_compose_file_path);
-    exec(dcmp('unpause'), {cwd: work_dir}, (error, stdout, stderr) => {
-        if (error) {
-            dialog.showErrorBox('Error: failed to `docker-compose unpause`', error);
-            return;
-        }
-        if (callback) callback();
-    });
-};
-exports.unpause = dcmp_unpause;
-
-/**
- * Executes `docker-compose stop`.
- *
- * @param {string}      docker_compose_file_path    Path to docker-compose.yml
- * @param {function}    callback                    Called when process terminates.
- */
-function dcmp_stop(docker_compose_file_path, callback) {
-    const work_dir = path.dirname(docker_compose_file_path);
-    exec(dcmp('stop'), {cwd: work_dir}, (error, stdout, stderr) => {
-        if (error) {
-            dialog.showErrorBox('Error: failed to `docker-compose stop`', error);
-            return;
-        }
-        if (callback) callback();
-    });
-};
-exports.stop = dcmp_stop;
-
-/**
- * Executes `docker-compose restart`.
- *
- * @param {string}      docker_compose_file_path    Path to docker-compose.yml
- * @param {function}    callback                    Called when process terminates.
- */
-function dcmp_restart(docker_compose_file_path, callback) {
-    const work_dir = path.dirname(docker_compose_file_path);
-    exec(dcmp('restart'), {cwd: work_dir}, (error, stdout, stderr) => {
-        if (error) {
-            dialog.showErrorBox('Error: failed to `docker-compose restart`', error);
-            return;
-        }
-        if (callback) callback();
-    });
-};
-exports.restart = dcmp_restart;
-
-/**
- * Executes `docker-compose down`.
- *
- * @param {string}      docker_compose_file_path    Path to docker-compose.yml
- * @param {function}    callback                    Called when process terminates.
- */
-function dcmp_down(docker_compose_file_path, callback) {
-    const work_dir = path.dirname(docker_compose_file_path);
-    exec(dcmp('down'), {cwd: work_dir}, (error, stdout, stderr) => {
-        if (error) {
-            dialog.showErrorBox('Error: failed to `docker-compose down`', error);
-            return;
-        }
-        if (callback) callback();
-    });
-};
-exports.down = dcmp_down;
-
-/**
- * Executes `docker-compose logs`.
- *
- * @param {string}      docker_compose_file_path    Path to docker-compose.yml
- * @param {function}    callback                    Called when process terminates.
- */
-function dcmp_logs(docker_compose_file_path, callback) {
-    const work_dir = path.dirname(docker_compose_file_path);
-    exec(dcmp('logs'), {cwd: work_dir}, (error, stdout, stderr) => {
-        if (error) {
-            dialog.showErrorBox('Error: failed to `docker-compose logs`', error);
-            return;
-        }
-        if (callback) callback(stdout);
-    });
-};
-exports.logs = dcmp_logs;
-
-
-//------------------------------------------------------------------------------
-//  docker-compose functions
-//------------------------------------------------------------------------------
 /**
  * Fetch status of containers.
  *
@@ -236,8 +83,9 @@ exports.logs = dcmp_logs;
  * @param {function}    callback                    Called with the parsed output when process terminates.
  *                                                  Parsed output of `docker-compose ps` is passed to argument.
  */
-function fetchContainersStatus(docker_compose_file_path, callback) {
-    dcmp_ps(docker_compose_file_path, function(result) {
+DockerCompose.prototype.fetchStatus = function(callback) {
+    runDcmpCommand('ps', this.dcmp_file_path, (stdout, stderr) => {
+        let result = parseStdout('ps', stdout);
         let ret = [];
         for (let i = result.length - 1; --i >= 0; ret.push({}));    // result.length - 1: remove header column.
         for (let key_idx = 0; key_idx < result[0].length; ++key_idx) {
@@ -249,14 +97,13 @@ function fetchContainersStatus(docker_compose_file_path, callback) {
         if (callback) callback(ret);
     });
 };
-exports.fetchContainersStatus = fetchContainersStatus;
 
 /**
  * get container's state.
  *
  * @param {array}   status      container's status list.
  */
-function getState(status) {
+DockerCompose.prototype.getState = function(status) {
     if (status.length <= 0) return State.None;
     for (let i = 0; i < status.length; ++i) {
         if (status[i].State == State.Running)   return State.Running;
@@ -264,4 +111,38 @@ function getState(status) {
     }
     return State.Exit;
 };
-exports.getState = getState;
+
+
+//------------------------------------------------------------------------------
+//  docker-compose command wrapper functions
+//------------------------------------------------------------------------------
+DockerCompose.prototype.ps = function(callback) {
+    console.log("DockerCompose.prot.ps: this.dcmp_file_path = " + this.dcmp_file_path);
+    runDcmpCommand('ps', this.dcmp_file_path, callback);
+};
+DockerCompose.prototype.logs = function(callback) {
+    runDcmpCommand('logs', this.dcmp_file_path, callback);
+};
+
+DockerCompose.prototype.up = function(callback) {
+    runDcmpCommand('up -d', this.dcmp_file_path, callback);
+};
+DockerCompose.prototype.down = function(callback) {
+    runDcmpCommand('down', this.dcmp_file_path, callback);
+};
+DockerCompose.prototype.start = function(callback) {
+    runDcmpCommand('start', this.dcmp_file_path, callback);
+};
+DockerCompose.prototype.restart = function(callback) {
+    runDcmpCommand('restart', this.dcmp_file_path, callback);
+};
+DockerCompose.prototype.stop = function(callback) {
+    runDcmpCommand('stop', this.dcmp_file_path, callback);
+};
+DockerCompose.prototype.pause = function(callback) {
+    runDcmpCommand('pause', this.dcmp_file_path, callback);
+};
+DockerCompose.prototype.unpause = function(callback) {
+    runDcmpCommand('unpause', this.dcmp_file_path, callback);
+};
+

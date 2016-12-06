@@ -8,10 +8,10 @@ const dialog = remote.dialog;
 const BrowserWindow = remote.BrowserWindow;
 
 const path = require('path');
-const dcmp = require('./../src/docker_compose');
+const DockerCompose = require('./../src/docker_compose');
 
 $(() => {
-    let selected_dcmp_file_path = null;
+    let dcmp = null;
     let elem_dcmp_dir_path = $('#dcmp_dir_path');
     let elem_dcmp_yml_file = $('#dcmp_yml_file');
 
@@ -114,15 +114,6 @@ $(() => {
         set_dcmp_btns_visible(config[state].hide, false);
     };
 
-    let get_proj_info = () => {
-        let proj_path = elem_dcmp_dir_path.html();
-        let dcmp_yml = elem_dcmp_yml_file.html();
-        if (proj_path == 'none' || dcmp_yml == 'none') {
-            return null;
-        }
-        return {path: proj_path, yml: dcmp_yml};
-    };
-
     let build_status_table_html = (status) => {
         let html = '<table class="table">';
         html += '<thead><tr><th>#</th>' +
@@ -141,11 +132,11 @@ $(() => {
     };
 
     let exec_dcmp_ps = (callback) => {
-        if (selected_dcmp_file_path == null) {
+        if (dcmp == null) {
             console.log('exec_dcmp_ps: you need to select a docker-compose.yml first.');
             return;
         }
-        dcmp.fetchContainersStatus(selected_dcmp_file_path, (status) => {
+        dcmp.fetchStatus((status) => {
             let state = dcmp.getState(status);
             setup_dcmp_btns(state);
             elem_dcmp_state.html(state);
@@ -155,90 +146,90 @@ $(() => {
     };
 
     let exec_dcmp_logs = () => {
-        if (selected_dcmp_file_path == null) {
+        if (dcmp == null) {
             console.log('exec_dcmp_logs: you need to select a docker-compose.yml first.');
             return;
         }
         loading_start();
-        dcmp.logs(selected_dcmp_file_path, (stdout) => {
+        dcmp.logs((stdout) => {
             exec_dcmp_ps(() => {loading_finish()});
             elem_logs.html(`<code>${stdout}</code>`);
         });
     };
 
     let exec_dcmp_up = () => {
-        if (selected_dcmp_file_path == null) {
+        if (dcmp == null) {
             console.log('exec_dcmp_up: you need to select a docker-compose.yml first.');
             return;
         }
         loading_start();
-        dcmp.up(selected_dcmp_file_path, (result) => {
+        dcmp.up((result) => {
             exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
     let exec_dcmp_start = () => {
-        if (selected_dcmp_file_path == null) {
+        if (dcmp == null) {
             console.log('exec_dcmp_up: you need to select a docker-compose.yml first.');
             return;
         }
         loading_start();
-        dcmp.start(selected_dcmp_file_path, (result) => {
+        dcmp.start((result) => {
             exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
     let exec_dcmp_pause = () => {
-        if (selected_dcmp_file_path == null) {
+        if (dcmp == null) {
             console.log('exec_dcmp_pause: you need to select a docker-compose.yml first.');
             return;
         }
         loading_start();
-        dcmp.pause(selected_dcmp_file_path, (result) => {
+        dcmp.pause((result) => {
             exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
     let exec_dcmp_unpause = () => {
-        if (selected_dcmp_file_path == null) {
+        if (dcmp == null) {
             console.log('exec_dcmp_unpause: you need to select a docker-compose.yml first.');
             return;
         }
         loading_start();
-        dcmp.unpause(selected_dcmp_file_path, (result) => {
+        dcmp.unpause((result) => {
             exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
     let exec_dcmp_stop = () => {
-        if (selected_dcmp_file_path == null) {
+        if (dcmp == null) {
             console.log('exec_dcmp_stop: you need to select a docker-compose.yml first.');
             return;
         }
         loading_start();
-        dcmp.stop(selected_dcmp_file_path, (result) => {
+        dcmp.stop((result) => {
             exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
     let exec_dcmp_restart = () => {
-        if (selected_dcmp_file_path == null) {
+        if (dcmp == null) {
             console.log('exec_dcmp_restart: you need to select a docker-compose.yml first.');
             return;
         }
         loading_start();
-        dcmp.restart(selected_dcmp_file_path, (result) => {
+        dcmp.restart((result) => {
             exec_dcmp_ps(() => {loading_finish()});
         });
     };
 
     let exec_dcmp_down = () => {
-        if (selected_dcmp_file_path == null) {
+        if (dcmp == null) {
             console.log('exec_dcmp_down: you need to select a docker-compose.yml first.');
             return;
         }
         loading_start();
-        dcmp.down(selected_dcmp_file_path, (result) => {
+        dcmp.down((result) => {
             exec_dcmp_ps(() => {loading_finish()});
         });
     };
@@ -252,10 +243,10 @@ $(() => {
             filters: [{name: 'docker-compose.yml', extensions: ['yml']}]
         }, (file_paths) => {
             if (file_paths && file_paths.length > 0) {
-                selected_dcmp_file_path = file_paths[0];
-                elem_dcmp_dir_path.html(path.dirname(selected_dcmp_file_path));
-                elem_dcmp_yml_file.html(path.basename(selected_dcmp_file_path));
-                // set_dcmp_btns_enable(['up','down'], true);
+                let dcmp_file_path = file_paths[0];
+                dcmp = new DockerCompose(dcmp_file_path);
+                elem_dcmp_dir_path.html(path.dirname(dcmp_file_path));
+                elem_dcmp_yml_file.html(path.basename(dcmp_file_path));
                 exec_dcmp_ps(() => {loading_finish()});
             }
         });

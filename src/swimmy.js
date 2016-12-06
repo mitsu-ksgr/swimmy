@@ -31,16 +31,6 @@ function setLoading(now_loading){
 }
 function loadingStart()  { setLoading(true);  }
 function loadingFinish() { setLoading(false); }
-
-function setState(state) {
-    $('#dcmp_state').html(state);
-}
-function setStatus(status) {
-    $('#runtime_info_contents #status').html(status);
-}
-function setLogs(logs) {
-    $('#runtime_info_contents #logs').html(logs);
-}
 function setupDcmpPathElem(dcmp_path) {
     let elem_dcmp_dir_path = $('#dcmp_dir_path');
     let elem_dcmp_yml_file = $('#dcmp_yml_file');
@@ -53,7 +43,6 @@ function setupDcmpPathElem(dcmp_path) {
         elem_dcmp_yml_file.html(path.basename(dcmp_path));
     }
 }
-
 function foreachDcmpButtons(targets, func) {
     let all_flag = false;
     if (typeof targets == 'string' && targets.toLowerCase() == 'all') {
@@ -144,8 +133,8 @@ function fetchStatus(callback) {
     dcmp.fetchStatus((status) => {
         let state = dcmp.getState(status);
         setupDcmpButtons(state);
-        setState(state);
-        setStatus(buildStatusTableHTML(status));
+        $('#dcmp_state').html(state);
+        $('#runtime_info_contents #status').html(buildStatusTableHTML(status));
         if (callback) callback();
     });
 }
@@ -155,7 +144,7 @@ function fetchLogs(callback) {
         return;
     }
     dcmp.logs((stdout, stderr) => {
-        setLogs(`<code>${stdout}</code>`);  // TODO: setLogs関数不要
+        $('#runtime_info_contents #logs').html(`<code>${stdout}</code>`);
         if (callback) callback();
     });
 }

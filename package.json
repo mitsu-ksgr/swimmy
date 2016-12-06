@@ -21,6 +21,8 @@
     "scripts": {
         "release-linux"  : "electron-packager . Swimmy --out=./out --overwrite --asar --version=1.4.8 --platform=linux  --arch=x64",
         "release-darwin" : "electron-packager . Swimmy --out=./out --overwrite --asar --version=1.4.8 --platform=darwin --arch=x64 --icon=./images/icon/swimmy.icns",
-        "release-win32"  : "electron-packager . Swimmy --out=./out --overwrite --asar --version=1.4.8 --platform=win32  --arch=x64 --icon=./images/icon/swimmy.ico "
+        "release-win32"  : "electron-packager . Swimmy --out=./out --overwrite --asar --version=1.4.8 --platform=win32  --arch=x64 --icon=./images/icon/swimmy.ico ",
+        "release-build"  : "npm install && npm prune && npm run release-linux && npm run release-darwin && npm run release-win32",
+        "release-build-with-docker" : "docker run --rm -v ${PWD}:/project -v ~/.electron:/root/.electron electronuserland/electron-builder:wine /usr/local/bin/npm run release-build"
     }
 }

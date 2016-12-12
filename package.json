@@ -19,10 +19,30 @@
         "electron-packager": "^8.3.0"
     },
     "scripts": {
-        "release-linux"  : "electron-packager . Swimmy --out=./out --overwrite --asar --version=1.4.8 --platform=linux  --arch=x64",
-        "release-darwin" : "electron-packager . Swimmy --out=./out --overwrite --asar --version=1.4.8 --platform=darwin --arch=x64 --icon=./images/icon/swimmy.icns",
-        "release-win32"  : "electron-packager . Swimmy --out=./out --overwrite --asar --version=1.4.8 --platform=win32  --arch=x64 --icon=./images/icon/swimmy.ico ",
-        "release-build"  : "npm install && npm prune && npm run release-linux && npm run release-darwin && npm run release-win32",
-        "release-build-with-docker" : "docker run --rm -v ${PWD}:/project -v ~/.electron:/root/.electron electronuserland/electron-builder:wine /usr/local/bin/npm run release-build"
+        "clean": "rm -rf ./generated/*",
+        "clean-linux": "rm -rf ./generated/linux",
+        "clean-darwin": "rm -rf ./generated/darwin",
+        "clean-win32": "rm -rf ./generated/win32",
+
+        "pack-linux"  : "npm run clean-linux  && electron-packager . Swimmy --out=./generated --overwrite --asar --version=1.4.8 --platform=linux  --arch=x64",
+        "pack-darwin" : "npm run clean-darwin && electron-packager . Swimmy --out=./generated --overwrite --asar --version=1.4.8 --platform=darwin --arch=x64 --icon=./images/icon/swimmy.icns",
+        "pack-win32"  : "npm run clean-win32  && electron-packager . Swimmy --out=./generated --overwrite --asar --version=1.4.8 --platform=win32  --arch=x64 --icon=./images/icon/swimmy.ico ",
+
+        "zip-linux"  : "zip ./generated/Swimmy-linux-x64.zip  -r ./generated/Swimmy-linux-x64",
+        "zip-darwin" : "zip ./generated/Swimmy-darwin-x64.zip -r ./generated/Swimmy-darwin-x64",
+        "zip-win32"  : "zip ./generated/Swimmy-win32-x64.zip  -r ./generated/Swimmy-win32-x64",
+        "zip" : "npm run zip-linux && npm run zip-darwin && npm run zip-win32",
+
+        "build-preprocess": "npm install && npm prune",
+        "build-linux"  : "npm run build-preprocess && npm run pack-linux",
+        "build-darwin" : "npm run build-preprocess && npm run pack-darwin",
+        "build-win32"  : "npm run build-preprocess && npm run pack-win32",
+        "build" : "npm run build-preprocess && npm run pack-linux && npm run pack-darwin && npm run pack-win32",
+
+        "release-linux"  : "npm run build-linux  && npm run zip-linux",
+        "release-darwin" : "npm run build-darwin && npm run zip-darwin",
+        "release-win32"  : "npm run build-win32  && npm run zip-win32",
+        "release" : "npm run build && npm run zip",
+        "release-with-docker" : "docker run --rm -v ${PWD}:/project -v ~/.electron:/root/.electron electronuserland/electron-builder:wine /usr/local/bin/npm run release"
     }
 }

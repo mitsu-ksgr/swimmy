@@ -21,4 +21,3 @@ deploy:
   on:
     repo: mitsu-ksgr/swimmy
     tags: true
-    branch: support_travis_ci

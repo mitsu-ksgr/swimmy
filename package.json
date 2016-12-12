@@ -1,7 +1,7 @@
 {
     "name": "swimmy",
     "productName": "Swimmy",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Swimmy is simple GUI tool for manage status of docker-compose",
     "license": "MIT",
     "repository": {

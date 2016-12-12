@@ -1,5 +1,7 @@
 language: node_js
 node_js: 6.9.2
+script:
+  - npm run test
 notifications:
   email: false
 before_deploy:

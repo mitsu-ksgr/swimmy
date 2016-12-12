@@ -1,0 +1,24 @@
+language: node_js
+node_js: 6.9.2
+script:
+  - npm run release
+notifications:
+  email: false
+before_deploy:
+  - sudo add-apt-repository ppa:ubuntu-wine/ppa -y
+  - sudo apt-get update -q
+  - sudo apt-get install -y wine1.7
+  - npm run package
+deploy:
+  provider: releases
+  api_key:
+    secure: fZ1hElNapLJZ06zXzAnthegM9OLByBJM6A+M6YIB315CG9Doy+G+u7PjlqrEeEoFDYbIQRH3xe7TddqZLS0nz4sW1P44fz08RlljznmMmNDiV9oKCGrxgSB363OHaOiXiJZcsOtCOBuAKIbPzkYmQUUREt3yvlcQSx6reuu7GHybTTxxv1b4sN2JV5udDbEyoGPHGAXmEYItr/0sIqJ7qOFS3aXx82mpIpLqiIzzLtLyN7RJeoPLzw/TVn18NdHqwqY2gZ8Knwekdx7qEKrvqFL8k+CNelTLFmcT+UqkNJJRfdm86x0paBs8qyRd2kMwKUk5tUjB3+uc9BHmWWkBn3Kd0wqY/k6+dcDz0RT0MVNojwUtlyPMdUbQLRwb7jLb7+6v+SNNnjTZRnha7bKegba5sr7FvTnE4FkAdSPBJyW/bctsCMrH2CpT+0KEH2CgNoWNceB9DHK0EQ5crG+1TwuuRSfmabMADvEOlLOiNiU6hAszpQot23CHt/85VZsTbuwFDkBathvjj5OKkEWNVNrXY0KrTrkrW/zdngkKgqwNnIGWfWuWkogpemB7m1UoN1JF+WSjNnZvj42EHaqVlZzvpD6cRNQirSQPoCem66myeEh0HcrgEiVWtm30s+VGe+JQH36rq+uwgGYV74++XW5aPIYOPSOrfdN2jvAqk1Q=
+  file:
+    - generated/Release/Swimmy-linux-x64.zip
+    - generated/Release/Swimmy-darwin-x64.zip
+    - generated/Release/Swimmy-win32-x64.zip
+  skip_cleanup: true
+  on:
+    repo: mitsu-ksgr/swimmy
+    tags: true
+    branch: support_travis_ci

@@ -7,7 +7,7 @@ notifications:
 before_deploy:
   - sudo add-apt-repository ppa:ubuntu-wine/ppa -y
   - sudo apt-get update -q
-  - sudo apt-get install -y wine1.8
+  - sudo apt-get install -y wine1.7
   - npm run release
 deploy:
   provider: releases

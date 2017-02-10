@@ -1,11 +1,23 @@
-![Swimmy](ss/icon.png)
-
 Swimmy
 ==============================
+
+[![releases](https://img.shields.io/github/release/mitsu-ksgr/swimmy.svg)](https://github.com/mitsu-ksgr/swimmy/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](LICENSE)
 
 Swimmy is simply GUI client of docker-compose built on Electron.
 
 ![swimmy screenshot](ss/ss.png)
+
+## Status
+| Branch    | Status  |
+|-----------|---------|
+| Master    | [![Build Status](https://travis-ci.org/mitsu-ksgr/swimmy.svg?branch=master)](https://travis-ci.org/mitsu-ksgr/swimmy) |
+| Develop   | [![Build Status](https://travis-ci.org/mitsu-ksgr/swimmy.svg?branch=develop)](https://travis-ci.org/mitsu-ksgr/swimmy) |
+
+
+## Installation
+Download [the binary release](https://github.com/mitsu-ksgr/swimmy/releases).
+
 
 ## Usage
 1. Select docker-compose.yml
